@@ -1,0 +1,28 @@
+[package]
+name = "pocket-throne"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+eldenring = {
+	git = "https://github.com/vswarte/fromsoftware-rs.git",
+	rev = "16d266146bcc7e896ac0d9a2c020e0d4c07baf52" # supports ER 1.17.1
+}
+fromsoftware-shared = {
+	git = "https://github.com/vswarte/fromsoftware-rs.git",
+	rev = "16d266146bcc7e896ac0d9a2c020e0d4c07baf52" # supports ER 1.17.1
+}
+
+[profile.dev]
+# Crash early
+panic = "abort"
+
+[profile.release]
+opt-level = 0
+strip = true
+lto = true
+codegen-units = 1
