@@ -16,6 +16,7 @@ fromsoftware-shared = {
 	git = "https://github.com/vswarte/fromsoftware-rs.git",
 	rev = "16d266146bcc7e896ac0d9a2c020e0d4c07baf52" # supports ER 1.17.1
 }
+glam = ">= 0.30"
 
 [profile.dev]
 # Crash early

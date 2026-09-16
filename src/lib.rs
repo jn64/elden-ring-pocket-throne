@@ -6,15 +6,21 @@ use eldenring::{
         WorldChrMan,
     },
     fd4::FD4TaskData,
+    position::PositionDelta,
     util::input,
 };
 use fromsoftware_shared::{FromStatic, SharedTaskImpExt};
+
+// Godrick's Throne
+static THRONE_ID: &str = "AEG210_285";
+static THRONE_SCALE: f32 = 1.0;
 
 #[unsafe(no_mangle)]
 /// # Safety
 ///
 /// This is exposed this way such that windows LoadLibrary API can call it. Do not call this yourself.
 pub unsafe extern "C" fn DllMain(_hmodule: usize, reason: u32) -> bool {
+    // Exit early if we're not attaching a DLL
     if reason != 1 {
         return true;
     }
@@ -22,8 +28,14 @@ pub unsafe extern "C" fn DllMain(_hmodule: usize, reason: u32) -> bool {
     // Kick off new thread.
     std::thread::spawn(|| {
         let cs_task = CSTaskImp::wait_for_instance(Duration::MAX).unwrap();
+
+        // Register a new task with the game to happen every frame during the game loop's
+        // ChrIns_PostPhysics phase because all the physics calculations have ran at this
+        // point.
         cs_task.run_recurring(
             |_: &FD4TaskData| {
+                // TODO: Configurable key
+                // 0x48 = H
                 if !input::is_key_pressed(0x48) {
                     return;
                 }
@@ -42,22 +54,39 @@ pub unsafe extern "C" fn DllMain(_hmodule: usize, reason: u32) -> bool {
                     return;
                 };
 
+                // Grab physics module from player.
+                let physics = &player.chr_ins.modules.physics;
+
+                // Make a directional vector that points backwards based on the
+                // player's rotation. See fromsoftware-rs/examples/debug-line.
+                let directional_vector = {
+                    let backward = glam::vec3(0.0, 0.0, 1.0);
+                    glam::Quat::from(physics.orientation).mul_vec3(backward)
+                };
+
                 block_geom_data.spawn_geometry(
-                    "AEG099_831",
+                    THRONE_ID,
                     &GeometrySpawnParameters {
-                        position: player.block_position,
+                        position: player.block_position
+                            + PositionDelta(
+                                directional_vector.x,
+                                directional_vector.y,
+                                directional_vector.z,
+                            ),
                         rot_x: 0.0,
                         rot_y: 0.0,
                         rot_z: 0.0,
-                        scale_x: 2.0,
-                        scale_y: 2.0,
-                        scale_z: 2.0,
+                        scale_x: THRONE_SCALE,
+                        scale_y: THRONE_SCALE,
+                        scale_z: THRONE_SCALE,
                     },
                 );
             },
+            // Task group in which physics calculations are already done.
             CSTaskGroupIndex::ChrIns_PostPhysics,
         );
     });
 
+    // Signal that DllMain executed successfully
     true
 }
