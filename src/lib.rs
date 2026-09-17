@@ -68,7 +68,7 @@ pub unsafe extern "C" fn DllMain(_hmodule: usize, reason: u32) -> bool {
                 let EulerAngles(_player_pitch, player_yaw, _player_roll) =
                     physics.orientation.to_euler_angles();
 
-                block_geom_data.spawn_geometry(
+                let throne = block_geom_data.spawn_geometry(
                     THRONE_ID,
                     &GeometrySpawnParameters {
                         position: player.block_position
@@ -87,6 +87,30 @@ pub unsafe extern "C" fn DllMain(_hmodule: usize, reason: u32) -> bool {
                         scale_z: THRONE_SCALE,
                     },
                 );
+
+                let throne_params =
+                    unsafe { throne.unwrap().as_mut().info.asset_geometry_param.as_mut() };
+
+                // Unbreakable chairs/thrones (e.g AEG210_285 and AEG030_889)
+                // seem to have these params in common:
+                //   hit_create_type: 0
+                //   behavior_type: 1
+                //   hp: -1
+                //   anim_break_id_max: 0
+                //   is_anim_break: false
+                //   is_attack_backlash: true
+                //
+                // Changing behavior_type to 0 and hp to positive makes them
+                // breakable. They conveniently disappear when breaking
+                // (no animation or debris).
+                throne_params.set_behavior_type(0);
+                // 200 HP survives a few jumps, but is still easy to break
+                // with attacks.
+                throne_params.set_hp(200);
+                throne_params.set_defense(0);
+
+                // Disable weapon bounce
+                throne_params.set_is_attack_backlash(false);
             },
             // Task group in which physics calculations are already done.
             CSTaskGroupIndex::ChrIns_PostPhysics,
