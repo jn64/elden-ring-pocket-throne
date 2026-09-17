@@ -7,6 +7,7 @@ use eldenring::{
     },
     fd4::FD4TaskData,
     position::PositionDelta,
+    rotation::EulerAngles,
     util::input,
 };
 use fromsoftware_shared::{FromStatic, SharedTaskImpExt};
@@ -64,6 +65,9 @@ pub unsafe extern "C" fn DllMain(_hmodule: usize, reason: u32) -> bool {
                     glam::Quat::from(physics.orientation).mul_vec3(backward)
                 };
 
+                let EulerAngles(_player_pitch, player_yaw, _player_roll) =
+                    physics.orientation.to_euler_angles();
+
                 block_geom_data.spawn_geometry(
                     THRONE_ID,
                     &GeometrySpawnParameters {
@@ -74,7 +78,9 @@ pub unsafe extern "C" fn DllMain(_hmodule: usize, reason: u32) -> bool {
                                 directional_vector.z,
                             ),
                         rot_x: 0.0,
-                        rot_y: 0.0,
+                        // Throne faces south by default (rot_y = 0.0).
+                        // Make the throne face the same direction as the player.
+                        rot_y: player_yaw,
                         rot_z: 0.0,
                         scale_x: THRONE_SCALE,
                         scale_y: THRONE_SCALE,
