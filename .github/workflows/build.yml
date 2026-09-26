@@ -1,0 +1,42 @@
+name: Build
+
+on:
+  # Manual run
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+  RUSTFLAGS: "-Dwarnings"
+  RUSTDOCFLAGS: "-Dwarnings"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install mingw
+        run: |
+          sudo apt-get install -y binutils-mingw-w64-x86-64 gcc-mingw-w64-x86-64
+
+      - name: Setup Rust toolchain
+        run: |
+          rustup target add x86_64-pc-windows-gnu
+
+      - name: Build debug DLL
+        run: cargo build --lib
+
+      - name: Build release DLL
+        run: cargo build --lib --release
+
+      - name: Upload debug DLL
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: pocket-throne-debug-${{ github.sha }}
+          path: target/x86_64-pc-windows-gnu/debug/pocket_throne.dll
+
+      - name: Upload release DLL
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: pocket-throne-${{ github.sha }}
+          path: target/x86_64-pc-windows-gnu/release/pocket_throne.dll
