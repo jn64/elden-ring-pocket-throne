@@ -12,6 +12,9 @@ use eldenring::{
 };
 use fromsoftware_shared::{FromStatic, SharedTaskImpExt};
 
+#[cfg(debug_assertions)]
+use std::{fs::File, io::Write};
+
 // Godrick's Throne
 static THRONE_ID: &str = "AEG210_285";
 static THRONE_SCALE: f32 = 1.0;
@@ -90,6 +93,54 @@ pub unsafe extern "C" fn DllMain(_hmodule: usize, reason: u32) -> bool {
 
                 let throne_params =
                     unsafe { throne.unwrap().as_mut().info.asset_geometry_param.as_mut() };
+
+                // Dump params. See eldenring::param::ASSET_GEOMETORY_PARAM_ST
+                // File is created next to eldenring.exe.
+                #[cfg(debug_assertions)]
+                if let Ok(mut params_file) = File::create_new(format!("{THRONE_ID}.txt")) {
+                    _ = writeln!(params_file, "{:#?}", throne_params);
+                    // Above is missing some fields like is_break_by_*
+                    _ = writeln!(
+                        params_file,
+                        "is_break_by_player_collide: {:#?}",
+                        throne_params.is_break_by_player_collide()
+                    );
+                    _ = writeln!(
+                        params_file,
+                        "is_break_by_enemy_collide: {:#?}",
+                        throne_params.is_break_by_enemy_collide()
+                    );
+                    _ = writeln!(
+                        params_file,
+                        "is_break_by_chr_ride: {:#?}",
+                        throne_params.is_break_by_chr_ride()
+                    );
+                    _ = writeln!(
+                        params_file,
+                        "is_disable_break_for_first_appear: {:#?}",
+                        throne_params.is_disable_break_for_first_appear()
+                    );
+                    _ = writeln!(
+                        params_file,
+                        "is_anim_break: {:#?}",
+                        throne_params.is_anim_break()
+                    );
+                    _ = writeln!(
+                        params_file,
+                        "is_damage_cover: {:#?}",
+                        throne_params.is_damage_cover()
+                    );
+                    _ = writeln!(
+                        params_file,
+                        "is_attack_backlash: {:#?}",
+                        throne_params.is_attack_backlash()
+                    );
+                    _ = writeln!(
+                        params_file,
+                        "is_break_by_hugeenemy_collide: {:#?}",
+                        throne_params.is_break_by_hugeenemy_collide()
+                    );
+                }
 
                 // Unbreakable chairs/thrones (e.g AEG210_285 and AEG030_889)
                 // seem to have these params in common:
