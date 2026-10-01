@@ -11,6 +11,10 @@ use eldenring::{
     util::input,
 };
 use fromsoftware_shared::{FromStatic, SharedTaskImpExt};
+use windows::{
+    Win32::{Foundation::HINSTANCE, System::SystemServices::DLL_PROCESS_ATTACH},
+    core::BOOL,
+};
 
 #[cfg(debug_assertions)]
 use std::{fs::File, io::Write};
@@ -25,10 +29,10 @@ static THRONE_SCALE: f32 = 1.0;
 /// # Safety
 ///
 /// This is exposed this way such that windows LoadLibrary API can call it. Do not call this yourself.
-pub unsafe extern "C" fn DllMain(_hmodule: usize, reason: u32) -> bool {
+pub unsafe extern "C" fn DllMain(_hmodule: HINSTANCE, reason: u32) -> BOOL {
     // Exit early if we're not attaching a DLL
-    if reason != 1 {
-        return true;
+    if reason != DLL_PROCESS_ATTACH {
+        return true.into();
     }
 
     // Kick off new thread.
@@ -171,5 +175,5 @@ pub unsafe extern "C" fn DllMain(_hmodule: usize, reason: u32) -> bool {
     });
 
     // Signal that DllMain executed successfully
-    true
+    true.into()
 }
