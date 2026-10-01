@@ -15,6 +15,8 @@ use fromsoftware_shared::{FromStatic, SharedTaskImpExt};
 #[cfg(debug_assertions)]
 use std::{fs::File, io::Write};
 
+mod config;
+
 // Godrick's Throne
 static THRONE_ID: &str = "AEG210_285";
 static THRONE_SCALE: f32 = 1.0;
@@ -31,16 +33,16 @@ pub unsafe extern "C" fn DllMain(_hmodule: usize, reason: u32) -> bool {
 
     // Kick off new thread.
     std::thread::spawn(|| {
+        let key = config::get_key();
+
         let cs_task = CSTaskImp::wait_for_instance(Duration::MAX).unwrap();
 
         // Register a new task with the game to happen every frame during the game loop's
         // ChrIns_PostPhysics phase because all the physics calculations have ran at this
         // point.
         cs_task.run_recurring(
-            |_: &FD4TaskData| {
-                // TODO: Configurable key
-                // 0x48 = H
-                if !input::is_key_pressed(0x48) {
+            move |_: &FD4TaskData| {
+                if !input::is_key_pressed(key) {
                     return;
                 }
 

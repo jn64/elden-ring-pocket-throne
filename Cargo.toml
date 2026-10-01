@@ -8,6 +8,7 @@ license = "MIT"
 crate-type = ["cdylib"]
 
 [dependencies]
+configparser = "3.3.0"
 eldenring = {
 	git = "https://github.com/vswarte/fromsoftware-rs.git",
 	rev = "59fbd3b3b7daaf14aca47c9f73530493dba6bc79" # supports ER 1.17.1
@@ -17,6 +18,14 @@ fromsoftware-shared = {
 	rev = "59fbd3b3b7daaf14aca47c9f73530493dba6bc79" # supports ER 1.17.1
 }
 glam = ">= 0.30"
+windows = {
+	version = "0.62.2",
+	features = [
+		"Win32_Foundation",
+		"Win32_System_LibraryLoader",
+		"Win32_System_SystemServices",
+	],
+}
 
 [profile.dev]
 # Crash early
