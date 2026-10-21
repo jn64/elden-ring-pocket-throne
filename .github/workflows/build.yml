@@ -44,7 +44,7 @@ jobs:
           rustup target add x86_64-pc-windows-gnu
 
       - name: Build DLL
-        run: cargo build --lib --release
+        run: cargo build --lib --release --locked
 
       # Use the same zip for build artifact and GH release
       - name: Create zip
