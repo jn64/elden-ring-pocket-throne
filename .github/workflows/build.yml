@@ -1,6 +1,9 @@
 name: Build
 
 on:
+  push:
+    tags:
+      - 'v*'
   # Manual run
   workflow_dispatch:
 
@@ -12,8 +15,25 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      # For ncipollo/release-action
+      # TODO: Isolate release step to a separate job so I don't need to give
+      # write permission to everything here
+      contents: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set env vars for manual run
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        # Use full SHA. ref_name would just be "main".
+        run: echo ZIP_NAME=pocket-throne-${{ github.sha }}.zip >> $GITHUB_ENV
+
+      - name: Set env vars for tag push
+        if: ${{ github.event_name == 'push' && github.ref_type == 'tag' }}
+        run: |
+          echo ZIP_NAME=pocket-throne-${{ github.ref_name }}.zip >> $GITHUB_ENV
+          echo TAG_SUBJECT=$(git tag --list --format='%(contents:subject)' ${{ github.ref_name }}) >> $GITHUB_ENV
+          echo TAG_BODY=$(git tag --list --format='%(contents:body)' ${{ github.ref_name }}) >> $GITHUB_ENV
 
       - name: Install mingw
         run: |
@@ -23,17 +43,30 @@ jobs:
         run: |
           rustup target add x86_64-pc-windows-gnu
 
-      - name: Build release DLL
+      - name: Build DLL
         run: cargo build --lib --release
 
-      - name: Move files
+      # Use the same zip for build artifact and GH release
+      - name: Create zip
+        # Leading "./" makes 7z strip dirs; no need to move files first
         run: |
-          mv target/x86_64-pc-windows-gnu/release/pocket_throne.dll dist/
+          7z a "${{ env.ZIP_NAME }}" \
+            ./target/x86_64-pc-windows-gnu/release/pocket_throne.dll \
+            ./dist/pocket_throne.ini
 
-      - name: Upload release DLL
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+      - name: Upload artifact
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: pocket-throne-${{ github.sha }}
-          path: |
-            dist/pocket_throne.dll
-            dist/pocket_throne.ini
+          # Upload single file, don't zip again
+          archive: false
+          path: ${{ env.ZIP_NAME }}
+
+      - name: Create GH release
+        if: ${{ github.event_name == 'push' && github.ref_type == 'tag' }}
+        uses: ncipollo/release-action@339a81892b84b4eeb0f6e744e4574d79d0d9b8dd # v1.21.0
+        with:
+          name: ${{ env.TAG_SUBJECT }}
+          body: ${{ env.TAG_BODY }}
+          artifacts: ${{ env.ZIP_NAME }}
+          makeLatest: true
+          immutableCreate: true
