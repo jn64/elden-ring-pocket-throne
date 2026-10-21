@@ -82,7 +82,7 @@ checksum = "f6579ea71cdf01b8ec995719df66f69ea2a08ea6406d0a4485a666a55f234c1a"
 [[package]]
 name = "eldenring"
 version = "0.14.0"
-source = "git+https://github.com/vswarte/fromsoftware-rs.git?rev=59fbd3b3b7daaf14aca47c9f73530493dba6bc79#59fbd3b3b7daaf14aca47c9f73530493dba6bc79"
+source = "git+https://github.com/vswarte/fromsoftware-rs.git?rev=09a4208ac26af4ae07b08c5273ee0e89faf97cb8#09a4208ac26af4ae07b08c5273ee0e89faf97cb8"
 dependencies = [
  "bitfield",
  "bitflags",
@@ -133,7 +133,7 @@ dependencies = [
 [[package]]
 name = "fromsoftware-shared"
 version = "0.14.0"
-source = "git+https://github.com/vswarte/fromsoftware-rs.git?rev=59fbd3b3b7daaf14aca47c9f73530493dba6bc79#59fbd3b3b7daaf14aca47c9f73530493dba6bc79"
+source = "git+https://github.com/vswarte/fromsoftware-rs.git?rev=09a4208ac26af4ae07b08c5273ee0e89faf97cb8#09a4208ac26af4ae07b08c5273ee0e89faf97cb8"
 dependencies = [
  "bitflags",
  "from-singleton",
@@ -149,7 +149,7 @@ dependencies = [
 [[package]]
 name = "fromsoftware-shared-macros"
 version = "0.14.0"
-source = "git+https://github.com/vswarte/fromsoftware-rs.git?rev=59fbd3b3b7daaf14aca47c9f73530493dba6bc79#59fbd3b3b7daaf14aca47c9f73530493dba6bc79"
+source = "git+https://github.com/vswarte/fromsoftware-rs.git?rev=09a4208ac26af4ae07b08c5273ee0e89faf97cb8#09a4208ac26af4ae07b08c5273ee0e89faf97cb8"
 dependencies = [
  "inflections",
  "proc-macro2",
@@ -160,7 +160,7 @@ dependencies = [
 [[package]]
 name = "fromsoftware-shared-stl"
 version = "0.14.0"
-source = "git+https://github.com/vswarte/fromsoftware-rs.git?rev=59fbd3b3b7daaf14aca47c9f73530493dba6bc79#59fbd3b3b7daaf14aca47c9f73530493dba6bc79"
+source = "git+https://github.com/vswarte/fromsoftware-rs.git?rev=09a4208ac26af4ae07b08c5273ee0e89faf97cb8#09a4208ac26af4ae07b08c5273ee0e89faf97cb8"
 
 [[package]]
 name = "fxhash"
@@ -272,7 +272,7 @@ checksum = "7a7cf3f8ecebb0f4895f4892a8be0a0dc81b498f9d56735cb769dc31bf00815b"
 
 [[package]]
 name = "pocket-throne"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "configparser",
  "eldenring",

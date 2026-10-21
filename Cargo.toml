@@ -1,6 +1,6 @@
 [package]
 name = "pocket-throne"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2024"
 license = "MIT"
 
@@ -11,11 +11,11 @@ crate-type = ["cdylib"]
 configparser = "3.3.0"
 eldenring = {
 	git = "https://github.com/vswarte/fromsoftware-rs.git",
-	rev = "59fbd3b3b7daaf14aca47c9f73530493dba6bc79" # supports ER 1.17.1
+	rev = "09a4208ac26af4ae07b08c5273ee0e89faf97cb8" # supports ER 1.17.2
 }
 fromsoftware-shared = {
 	git = "https://github.com/vswarte/fromsoftware-rs.git",
-	rev = "59fbd3b3b7daaf14aca47c9f73530493dba6bc79" # supports ER 1.17.1
+	rev = "09a4208ac26af4ae07b08c5273ee0e89faf97cb8" # supports ER 1.17.2
 }
 glam = ">= 0.30"
 windows = {
